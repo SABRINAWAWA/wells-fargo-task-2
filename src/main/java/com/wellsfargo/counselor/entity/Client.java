@@ -1,17 +1,24 @@
 package com.wellsfargo.counselor.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
-public class Advisor {
+public class Client {
 
     @Id
     @GeneratedValue()
-    private long advisorId;
+    private long clientId;
+
+    @ManyToOne
+    @JoinColumn(name = "advisor_id")
+    private Advisor advisor;
+
+    @OneToOne(
+            mappedBy = "client",
+            cascade = CascadeType.ALL
+    )
+    private Portfolio portfolio;
 
     @Column(nullable = false)
     private String firstName;
@@ -28,14 +35,12 @@ public class Advisor {
     @Column(nullable = false)
     private String email;
 
-    @OneToMany(mappedBy = "advisor")
-    @JsonManagedReference
-    private List<Client> clients;
-    protected Advisor() {
+    protected Client() {
 
     }
 
-    public Advisor(String firstName, String lastName, String address, String phone, String email) {
+    public Client(Portfolio portfolio, String firstName, String lastName, String address, String phone, String email) {
+        this.portfolio = portfolio;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -43,8 +48,20 @@ public class Advisor {
         this.email = email;
     }
 
-    public Long getAdvisorId() {
-        return advisorId;
+    public Advisor getAdvisor() {
+        return advisor;
+    }
+
+    public void setAdvisor(Advisor advisor) {
+        this.advisor = advisor;
+    }
+
+    public Portfolio getPortfolio() {
+        return portfolio;
+    }
+
+    public void setPortfolio(Portfolio portfolio) {
+        this.portfolio = portfolio;
     }
 
     public String getFirstName() {
@@ -87,24 +104,17 @@ public class Advisor {
         this.email = email;
     }
 
-    public List<Client> getClients() {
-        return clients;
-    }
-
-    public void setClients(List<Client> clients) {
-        this.clients = clients;
-    }
-
     @Override
     public String toString() {
-        return "Advisor{" +
-                "advisorId=" + advisorId +
+        return "Client{" +
+                "clientId=" + clientId +
+                ", advisor=" + advisor +
+                ", portfolio=" + portfolio +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", address='" + address + '\'' +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
-                ", clients=" + clients +
                 '}';
     }
 }
